@@ -1,0 +1,56 @@
+@startuml container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container Diagram for TeamSync Platform
+
+Person(user, "Users", "Project Managers, Team Members, Clients")
+
+Container_Boundary(c1, "TeamSync Platform") {
+   Container(web, "Web Application", "React, TypeScript", "Предоставляет веб-интерфейс")
+   Container(mobile, "Mobile App", "React Native", "Мобильное приложение")
+   Container(api, "API Gateway", "Kong, Nginx", "Маршрутизация API запросов")
+ 
+   Container(auth, "Authentication Service", "Node.js, JWT", "Аутентификация и авторизация")
+   Container(project, "Project Service", "Java, Spring Boot", "Управление проектами")
+   Container(task, "Task Service", "Python, FastAPI", "Управление задачами")
+   Container(user_service, "User Service", "Node.js, Express", "Управление пользователями")
+   Container(notification, "Notification Service", "Go", "Отправка уведомлений")
+   Container(file, "File Service", "Java, Spring Boot", "Управление файлами")
+   Container(chat, "Chat Service", "Node.js, Socket.io", "Чаты и коммуникации")
+   Container(reporting, "Reporting Service", "Python, Django", "Отчеты и аналитика")
+ 
+   ContainerDb(db_user, "User Database", "PostgreSQL", "Данные пользователей")
+   ContainerDb(db_project_task, "Project/Task Database", "PostgreSQL", "Данные проектов")
+   ContainerDb(queue, "Message Queue", "RabbitMQ", "Очередь сообщений")
+}
+
+System_Ext(email_ext, "Email Service", "Внешний почтовый сервис")
+System_Ext(storage_ext, "Cloud Storage", "Хранилище файлов")
+
+Rel(user, web, "Использует", "HTTPS")
+Rel(user, mobile, "Использует", "HTTPS")
+
+Rel(web, api, "API вызовы", "JSON/HTTPS")
+Rel(mobile, api, "API вызовы", "JSON/HTTPS")
+
+Rel(api, auth, "Аутентификация", "HTTP")
+Rel(api, project, "Управление проектами", "HTTP")
+Rel(api, task, "Управление задачами", "HTTP")
+Rel(api, user_service, "Управление пользователями", "HTTP")
+Rel(api, file, "Управление файлами", "HTTP")
+Rel(api, chat, "Чаты", "WebSocket")
+Rel(api, reporting, "Отчеты", "HTTP")
+
+Rel(auth, db_user, "Читает/записывает", "SQL")
+Rel(user_service, db_user, "Читает/записывает", "SQL")
+Rel(project, db_project_task, "Читает/записывает", "SQL")
+Rel(task, db_project_task, "Читает/записывает", "SQL")
+
+Rel(notification, queue, "Потребляет сообщения", "AMQP")
+Rel(project, queue, "Публикует события", "AMQP")
+Rel(task, queue, "Публикует события", "AMQP")
+
+Rel(notification, email_ext, "Отправляет email", "SMTP")
+Rel(file, storage_ext, "Хранит файлы", "S3 API")
+
+@enduml

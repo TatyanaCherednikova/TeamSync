@@ -1,0 +1,115 @@
+@startuml er_diagram
+skinparam linetype ortho
+
+entity User {
+ * objectId **user_id** <<PK>>
+ --
+ string **first_name**
+ string **last_name**
+ string **email**
+ string **profile_picture_url**
+ list **role**
+ boolean **is_active**
+ dateTime **created_at**
+ dateTime **updated_at**
+}
+
+entity Project {
+ * objectId **project_id** <<PK>>
+ --
+ string **name**
+ string **description**
+ list **status**
+ list **priority**
+ dateTime **start_date**
+ dateTime **end_date**
+ double **budget**
+ objectId **created_by** <<FK>>
+ dateTime **created_at**
+ dateTime **updated_at**
+}
+
+entity Task {
+ * objectId **task_id** <<PK>>
+ --
+ objectId **project_id** <<FK>>
+ objectId **executor** <<FK>>
+ string **title**
+ string **description**
+ list **status**
+ list **priority**
+ double **estimated_hours**
+ double **actual_hours**
+ dateTime **deadline**
+ objectId **created_by** <<FK>>
+ dateTime **created_at**
+ dateTime **updated_at**
+}
+
+entity ProjectMember {
+ * objectId **project_id** <<FK,PK>>
+ * objectId **user_id** <<FK,PK>>
+ --
+ list **role**
+}
+
+entity Comment {
+ * objectId **comment_id** <<PK>>
+ --
+ objectId **task_id** <<FK>>
+ objectId **user_id** <<FK>>
+ string **content**
+ dateTime **created_at**
+ dateTime **updated_at**
+}
+
+entity File {
+ * objectId **file_id** <<PK>>
+ --
+ objectId **project_id** <<FK>>
+ objectId **task_id** <<FK>>
+ objectId **uploaded_by** <<FK>>
+ string **name**
+ string **file_path**
+ double **file_size**
+ dateTime **created_at**
+}
+
+entity TimeLog {
+ * objectId **log_id** <<PK>>
+ --
+ objectId **task_id** <<FK>>
+ objectId **user_id** <<FK>>
+ double **hours_worked** 
+ string **description**
+ dateTime **work_date**
+ dateTime **created_at**
+}
+
+entity Notification {
+ * objectId **notification_id** <<PK>>
+ --
+ objectId **user_id** <<FK>>
+ string **title**
+ string **message**
+ dateTime **created_at**
+}
+
+User ||--o{ Project : "creates"
+User ||--o{ Task : "creates/assigned_to"
+User ||--o{ Comment : "writes"
+User ||--o{ File : "uploads"
+User ||--o{ TimeLog : "logs_time"
+User ||--o{ Notification : "receives"
+
+Project ||--o{ Task : "contains"
+Project ||--o{ ProjectMember : "has_members"
+Project ||--o{ File : "contains_files"
+
+Task ||--o{ Comment : "has_comments"
+Task ||--o{ File : "has_attachments"
+Task ||--o{ TimeLog : "tracks_time"
+
+ProjectMember }o--|| User : "is_member"
+
+@enduml

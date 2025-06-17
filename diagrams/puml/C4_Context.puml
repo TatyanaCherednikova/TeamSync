@@ -1,0 +1,28 @@
+@startuml context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for TeamSync
+
+Person(pm, "Project Manager", "Управляет проектами и командами")
+Person(team, "Team Member", "Выполняет задачи и участвует в проектах")
+Person(client, "Client", "Заказчик проектов")
+
+System(teamsync, "TeamSync Platform", "Платформа для управления проектами и командной работы")
+
+System_Ext(email, "Email System", "Система электронной почты")
+System_Ext(calendar, "Calendar", "Календарь")
+System_Ext(storage, "Cloud Storage", "Облачное хранилище")
+System_Ext(video, "Video Conference", "Сервис видеоконференций")
+System_Ext(ldap, "LDAP/AD", "Служба каталогов")
+
+Rel(pm, teamsync, "Создает проекты, назначает задачи")
+Rel(team, teamsync, "Выполняет задачи, обновляет статус")
+Rel(client, teamsync, "Просматривает прогресс проектов")
+
+Rel(teamsync, email, "Отправляет уведомления")
+Rel(teamsync, calendar, "Синхронизирует события")
+Rel(teamsync, storage, "Хранит файлы")
+Rel(teamsync, video, "Инициирует видеозвонки")
+Rel(teamsync, ldap, "Аутентификация пользователей")
+
+@enduml
