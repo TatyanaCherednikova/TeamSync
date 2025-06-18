@@ -434,4 +434,4 @@ _Notification Service (NS):_ Сервис, отвечающий за отпра�
 _Project Service (PS):_ Микросервис, управляющий проектами и их структурой.
 
 == BPMN Диаграмма бизнес-процесса
-https://modeler.camunda.io/share/c0525e5a-e0dd-4f7d-8323-066b54f8b5ad
+https://modeler.camunda.io/share/6ea808c2-63cc-4a2c-95eb-8ae1310d6ec5
