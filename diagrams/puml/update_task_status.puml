@@ -1,0 +1,34 @@
+@startuml update_task_status
+title Обновление статуса задачи
+
+actor "User" as User
+participant "Web Client" as WC
+participant "API Gateway" as API
+participant "Task Service" as TS
+database "Project/Task Database" as PTDB
+queue "Message Queue" as MQ
+participant "Notification Service" as NS
+participant "Project Service" as PS
+
+User -> WC: Обновить статус задачи
+WC -> API: PUT /api/tasks/{id}/status
+
+API -> TS: PUT /tasks/{id}/status
+TS -> PTDB: SELECT task WHERE id = {id}
+PTDB -> TS: Данные задачи
+
+TS -> PTDB: UPDATE task SET status = 'done'
+PTDB -> TS: Статус обновлен
+
+TS -> MQ: Publish task_status_changed_event
+
+TS -> API: Статус обновлен (200)
+API -> WC: HTTP 200 OK
+WC -> User: Статус задачи обновлен
+
+MQ -> NS: Consume task_status_changed_event
+NS -> PS: Получить участников проекта
+PS -> NS: Список участников
+NS -> NS: Отправить уведомления
+
+@enduml

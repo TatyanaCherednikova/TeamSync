@@ -1,0 +1,30 @@
+@startuml create_task
+title Создание новой задачи
+
+actor "User" as User
+participant "Web Client" as WC
+participant "API Gateway" as API
+participant "Task Service" as TS
+database "Project/Task Database" as PTDB
+queue "Message Queue" as MQ
+participant "Notification Service" as NS
+participant "Project Service" as PS
+
+User -> WC: Создать новую задачу
+WC -> API: POST /api/tasks
+
+API -> TS: POST /tasks
+TS -> PTDB: INSERT INTO tasks
+PTDB -> TS: task_id created
+
+TS -> MQ: Publish task_created_event
+TS -> API: Задача создана (201)
+API -> WC: HTTP 201 Created
+WC -> User: Задача успешно создана
+
+MQ -> NS: Consume task_created_event
+NS -> PS: Получить участников проекта
+PS -> NS: Список участников
+NS -> NS: Отправить уведомления
+
+@enduml

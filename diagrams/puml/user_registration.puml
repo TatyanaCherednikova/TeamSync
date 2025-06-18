@@ -1,0 +1,36 @@
+@startuml user_registration
+title Регистрация пользователя
+
+actor "User" as User
+participant "Web Client" as WC
+participant "API Gateway" as API
+participant "Authentification Service" as Auth
+participant "User Service" as US
+database "User Database" as UB
+
+User -> WC: Ввести данные для регистрации (email, пароль)
+WC -> API: POST /api/v1/register
+API -> Auth: POST /auth/check-availability
+Auth -> US: GET /users/check-unique?email={email}
+US -> UB: SELECT * FROM users WHERE email = {email}
+UB --> US: Результат проверки
+US --> Auth: Результат проверки
+Auth --> API: Результат проверки
+
+alt Успешная проверка (email уникален)
+   API -> Auth: Создать нового пользователя
+   Auth -> US: Сохранить данные пользователя
+   US -> UB: Сохранить нового пользователя
+   UB --> US: Подтверждение сохранения
+   US --> Auth: Подтверждение сохранения
+   Auth --> API: Подтверждение создания пользователя
+  
+   API --> WC: Успешная регистрация
+   WC --> User: Сообщение об успешной регистрации
+
+else email уже существует
+   API --> WC: Ошибка: email уже занят
+   WC --> User: Сообщение об ошибке
+
+end
+@enduml

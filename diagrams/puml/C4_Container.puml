@@ -1,9 +1,9 @@
 @startuml container
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title Container Diagram for TeamSync Platform
+title Диаграмма контейнеров для TeamSync Platform
 
-Person(user, "Users", "Project Managers, Team Members, Clients")
+Person(user, "Users", "Project Managers, Team Members")
 
 Container_Boundary(c1, "TeamSync Platform") {
    Container(web, "Web Application", "React, TypeScript", "Предоставляет веб-интерфейс")
@@ -26,6 +26,8 @@ Container_Boundary(c1, "TeamSync Platform") {
 
 System_Ext(email_ext, "Email Service", "Внешний почтовый сервис")
 System_Ext(storage_ext, "Cloud Storage", "Хранилище файлов")
+System_Ext(calendar, "Calendar", "Календарь")
+System_Ext(video, "Video Conference", "Сервис видеоконференций")
 
 Rel(user, web, "Использует", "HTTPS")
 Rel(user, mobile, "Использует", "HTTPS")
@@ -52,5 +54,7 @@ Rel(task, queue, "Публикует события", "AMQP")
 
 Rel(notification, email_ext, "Отправляет email", "SMTP")
 Rel(file, storage_ext, "Хранит файлы", "S3 API")
+Rel(user_service, calendar, "Синхронизирует встречи", "Outlook Calendar")
+Rel(user_service, video, "Организует видеоконференции", "Zoom")
 
 @enduml

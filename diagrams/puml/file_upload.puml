@@ -1,0 +1,35 @@
+@startuml file_upload
+title Загрузка файла в проект
+
+actor "User" as User
+participant "Web Client" as WC
+participant "API Gateway" as API
+participant "File Service" as FS
+participant "Cloud Storage" as CS
+database "File Database" as FDB
+queue "Message Queue" as MQ
+participant "Notification Service" as NS
+participant "Project Service" as PS
+
+User -> WC: Выбрать и загрузить файл
+WC -> API: POST /api/files/upload (multipart)
+
+API -> FS: POST /files/upload
+FS -> FS: Валидация файла (размер, тип)
+FS -> CS: Загрузить файл в облако
+CS -> FS: URL файла
+
+FS -> FDB: INSERT INTO file_attachments
+FDB -> FS: file_id created
+
+FS -> MQ: Publish file_uploaded_event
+FS -> API: Файл загружен (201)
+API -> WC: HTTP 201 Created + file metadata
+WC -> User: Файл успешно загружен
+
+MQ -> NS: Consume file_uploaded_event
+NS -> PS: Получить участников проекта
+PS -> NS: Список участников
+NS -> NS: Отправить уведомления
+
+@enduml
